@@ -1,42 +1,76 @@
-import React, { Component } from 'react'
-import Table from './Table'
-import Form from './Form';
+import React, { useState, Fragment } from 'react'
+import AddUserForm from './forms/AddUserForm'
+import EditUserForm from './forms/EditUserForm'
+import UserTable from './tables/UserTable'
 
-class App extends Component {
-  state = {
-      characters: []
-  };
+const App = () => {
+	// Data
+	const usersData = [
+		{ id: 1, name: 'Tania', username: 'floppydiskette' },
+		{ id: 2, name: 'Craig', username: 'siliconeidolon' },
+		{ id: 3, name: 'Ben', username: 'benisphere' },
+	]
 
-  removeCharacter = index => {
-      const { characters } = this.state;
-  
-      this.setState({
-          characters: characters.filter((character, i) => { 
-              return i !== index;
-          })
-      });
-  }
+	const initialFormState = { id: null, name: '', username: '' }
 
-  handleSubmit = character => {
-      this.setState({characters: [...this.state.characters, character]});
-  }
+	// Setting state
+	const [ users, setUsers ] = useState(usersData)
+	const [ currentUser, setCurrentUser ] = useState(initialFormState)
+	const [ editing, setEditing ] = useState(false)
 
-  render() {
-      const { characters } = this.state;
-      
-      return (
-          <div className="container">
-              <h1>React Tutorial</h1>
-              <p>Add a character with a name and a job to the table.</p>
-              <Table
-                  characterData={characters}
-                  removeCharacter={this.removeCharacter}
-              />
-              <h3>Add New</h3>
-              <Form handleSubmit={this.handleSubmit} />
-          </div>
-      );
-  }
+	// CRUD operations
+	const addUser = user => {
+		user.id = users.length + 1
+		setUsers([ ...users, user ])
+	}
+
+	const deleteUser = id => {
+		setEditing(false)
+
+		setUsers(users.filter(user => user.id !== id))
+	}
+
+	const updateUser = (id, updatedUser) => {
+		setEditing(false)
+
+		setUsers(users.map(user => (user.id === id ? updatedUser : user)))
+	}
+
+	const editRow = user => {
+		setEditing(true)
+
+		setCurrentUser({ id: user.id, name: user.name, username: user.username })
+	}
+
+	return (
+		<div className="container">
+			<h1>CRUD App with Hooks</h1>
+			<div className="flex-row">
+				<div className="flex-large">
+					{editing ? (
+						<Fragment>
+							<h2>Edit user</h2>
+							<EditUserForm
+								editing={editing}
+								setEditing={setEditing}
+								currentUser={currentUser}
+								updateUser={updateUser}
+							/>
+						</Fragment>
+					) : (
+						<Fragment>
+							<h2>Add user</h2>
+							<AddUserForm addUser={addUser} />
+						</Fragment>
+					)}
+				</div>
+				<div className="flex-large">
+					<h2>View users</h2>
+					<UserTable users={users} editRow={editRow} deleteUser={deleteUser} />
+				</div>
+			</div>
+		</div>
+	)
 }
 
-export default App;
+export default App
