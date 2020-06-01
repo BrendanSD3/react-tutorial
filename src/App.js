@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from 'react'
 import AddUserForm from './forms/AddUserForm'
 import EditUserForm from './forms/EditUserForm'
-import UserTable from './tables/UserTable'
+import UserTable from './Tables/UserTable'
 
 const App = () => {
 	// Data
